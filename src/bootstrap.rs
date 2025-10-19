@@ -24,9 +24,6 @@ pub async fn bootstrap(
         .with_max_level(tracing_subscriber::filter::LevelFilter::INFO)
         .init();
 
-    dotenvy::dotenv().ok();
-    info!(".env files loaded");
-
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
     let ip = format!("0.0.0.0:{}", port);
     info!("Starting {} on {}...", service_name, ip);
