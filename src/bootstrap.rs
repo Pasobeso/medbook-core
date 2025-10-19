@@ -1,12 +1,12 @@
 use anyhow::Result;
+use axum::Router;
 use dotenvy::dotenv;
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 use tokio::net::TcpListener;
+use tower_http::{limit::RequestBodyLimitLayer, timeout::TimeoutLayer, trace::TraceLayer};
 use tracing::info;
 
-use axum::Router;
-
-use crate::{app_state::AppState, consumers, outbox};
+use crate::{app_state::AppState, config, consumers, cors, outbox};
 
 pub fn init_tracing() {
     tracing_subscriber::fmt()
@@ -33,12 +33,14 @@ pub async fn bootstrap(
     app: Router<AppState>,
     queue_handlers: &[(&str, consumers::ConsumerFn)],
 ) -> Result<()> {
-    let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
+    let config = config::load()?;
+
+    let port = config.server.port;
     let ip = format!("0.0.0.0:{}", port);
     info!("Starting {} on {}...", service_name, ip);
 
     // Shared app state
-    let app_state = AppState::init().await?;
+    let app_state = AppState::init(&config).await?;
     let shared_state = Arc::new(app_state.clone());
 
     // Start all message consumers
@@ -50,7 +52,14 @@ pub async fn bootstrap(
         );
     }
 
-    let app = app.with_state(app_state);
+    let app = app
+        .with_state(app_state)
+        .layer(TimeoutLayer::new(Duration::from_secs(
+            config.server.timeout,
+        )))
+        .layer(RequestBodyLimitLayer::new(config.server.body_limit))
+        .layer(TraceLayer::new_for_http())
+        .layer(cors::create_from_stage(config::get_stage(), &config));
 
     // Start outbox worker
     outbox::init(shared_state.clone());

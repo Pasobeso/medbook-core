@@ -2,7 +2,10 @@ use anyhow::Result;
 use reqwest::Client;
 use rmq_wrappers::Rmq;
 
-use crate::db::{self, DbPool};
+use crate::{
+    config::DotEnvyConfig,
+    db::{self, DbPool},
+};
 
 #[derive(Clone)]
 pub struct AppState {
@@ -12,11 +15,11 @@ pub struct AppState {
 }
 
 impl AppState {
-    pub async fn init() -> Result<Self> {
+    pub async fn init(config: &DotEnvyConfig) -> Result<Self> {
         Ok(Self {
-            db_pool: db::connect(&std::env::var("DATABASE_URL")?).await?,
+            db_pool: db::connect(&config.database.url).await?,
             http_client: Client::new(),
-            rmq_client: Rmq::connect(&std::env::var("RMQ_URL")?).await?,
+            rmq_client: Rmq::connect(&config.message_queue.url).await?,
         })
     }
 }
