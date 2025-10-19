@@ -34,6 +34,7 @@ pub async fn bootstrap(
     queue_handlers: &[(&str, consumers::ConsumerFn)],
 ) -> Result<()> {
     let config = config::load()?;
+    info!("Config loaded");
 
     let port = config.server.port;
     let ip = format!("0.0.0.0:{}", port);
@@ -60,6 +61,10 @@ pub async fn bootstrap(
         .layer(RequestBodyLimitLayer::new(config.server.body_limit))
         .layer(TraceLayer::new_for_http())
         .layer(cors::create_from_stage(config::get_stage(), &config));
+    info!("Initialized TimeoutLayer");
+    info!("Initialized RequestBodyLimitLayer");
+    info!("Initialized TraceLayer");
+    info!("Initialized CORS with stage: {}", config::get_stage());
 
     // Start outbox worker
     outbox::init(shared_state.clone());
