@@ -1,4 +1,5 @@
 use anyhow::Result;
+use dotenvy::dotenv;
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tracing::info;
@@ -6,6 +7,18 @@ use tracing::info;
 use axum::Router;
 
 use crate::{app_state::AppState, consumers, outbox};
+
+pub fn init_tracing() {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing_subscriber::filter::LevelFilter::INFO)
+        .init();
+    info!("Initialized tracing");
+}
+
+pub fn init_env() {
+    dotenv().ok();
+    info!("Initialized .env");
+}
 
 /// Bootstraps a MedBook microservice with common setup steps.
 ///
@@ -20,10 +33,6 @@ pub async fn bootstrap(
     app: Router<AppState>,
     queue_handlers: &[(&str, consumers::ConsumerFn)],
 ) -> Result<()> {
-    tracing_subscriber::fmt()
-        .with_max_level(tracing_subscriber::filter::LevelFilter::INFO)
-        .init();
-
     let port = std::env::var("PORT").unwrap_or_else(|_| "3000".to_string());
     let ip = format!("0.0.0.0:{}", port);
     info!("Starting {} on {}...", service_name, ip);
