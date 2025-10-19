@@ -1,5 +1,5 @@
 use anyhow::Result;
-use axum::Router;
+use axum::{Router, routing};
 use dotenvy::dotenv;
 use std::{sync::Arc, time::Duration};
 use tokio::net::TcpListener;
@@ -54,6 +54,7 @@ pub async fn bootstrap(
     }
 
     let app = app
+        .route("/health-check", routing::get(|| async { "OK" }))
         .with_state(app_state)
         .layer(TimeoutLayer::new(Duration::from_secs(
             config.server.timeout,
@@ -61,6 +62,7 @@ pub async fn bootstrap(
         .layer(RequestBodyLimitLayer::new(config.server.body_limit))
         .layer(TraceLayer::new_for_http())
         .layer(cors::create_from_stage(config::get_stage(), &config));
+
     info!("Initialized TimeoutLayer");
     info!("Initialized RequestBodyLimitLayer");
     info!("Initialized TraceLayer");
