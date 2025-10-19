@@ -6,7 +6,8 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.100"
 axum = "0.8.4"
-diesel = { version = "2.2.12", features = ["chrono", "uuid"] }
+diesel = { version = "2.2.12", features = ["chrono", "uuid", "postgres"] }
+diesel_migrations = { version = "2", features = ["postgres"] }
 diesel-async = { version = "0.6.1", features = [
     "postgres",
     "tokio",
