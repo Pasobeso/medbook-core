@@ -9,10 +9,10 @@ axum = "0.8.4"
 diesel = { version = "2.2.12", features = ["chrono", "uuid", "postgres"] }
 diesel_migrations = { version = "2", features = ["postgres"] }
 diesel-async = { version = "0.6.1", features = [
-    "postgres",
-    "tokio",
-    "pool",
-    "bb8",
+	"postgres",
+	"tokio",
+	"pool",
+	"bb8",
 ] }
 dotenvy = "0.15.7"
 reqwest = { version = "0.12.23", features = ["json"] }
@@ -21,7 +21,13 @@ serde_json = "1.0.145"
 thiserror = "2.0.16"
 tokio = { version = "1.47.1", features = ["full"] }
 tower = "0.5.2"
-tower-http = { version = "0.6.6", features = ["trace", "fs", "timeout", "limit", "cors"] }
+tower-http = { version = "0.6.6", features = [
+	"trace",
+	"fs",
+	"timeout",
+	"limit",
+	"cors",
+] }
 tracing = "0.1.41"
 tracing-subscriber = "0.3.20"
 rmq-wrappers = { git = "https://github.com/Pasobeso/rmq-wrappers.git" }
@@ -32,3 +38,4 @@ chrono = { version = "0.4.42", features = ["serde"] }
 uuid = { version = "1.18.1", features = ["serde"] }
 jsonwebtoken = { version = "9", default-features = false }
 utoipa = "5.4.0"
+utoipa-swagger-ui = { version = "9.0.2", features = ["axum", "reqwest"] }

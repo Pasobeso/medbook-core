@@ -10,3 +10,4 @@ pub mod jwt_authentication;
 pub mod middleware;
 pub mod outbox;
 pub mod schema;
+pub mod swagger;
