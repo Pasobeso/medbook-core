@@ -6,13 +6,6 @@ pub struct DotEnvyConfig {
     pub frontend: Frontend,
     pub database: Database,
     pub message_queue: MessageQueue,
-    pub swagger: Swagger,
-}
-
-#[derive(Debug, Clone)]
-pub struct Swagger {
-    pub swagger_path: String,
-    pub swagger_json_path: String,
 }
 
 #[derive(Debug, Clone)]
@@ -115,18 +108,11 @@ pub fn load() -> Result<DotEnvyConfig> {
         url: std::env::var("RMQ_URL").expect("RMQ_URL is invalid"),
     };
 
-    let swagger = Swagger {
-        swagger_path: std::env::var("SWAGGER_PATH").expect("SWAGGER_PATH is invalid"),
-        swagger_json_path: std::env::var("SWAGGER_JSON_PATH")
-            .expect("SWAGGER_JSON_PATH is invalid"),
-    };
-
     Ok(DotEnvyConfig {
         server,
         frontend,
         database,
         message_queue,
-        swagger,
     })
 }
 
