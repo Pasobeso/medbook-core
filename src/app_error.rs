@@ -8,16 +8,17 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tracing::error;
+use utoipa::ToSchema;
 
 use crate::aliases::DieselError;
 
-#[derive(Serialize, Deserialize)]
-pub struct StdResponse<T: Serialize, M: ToString> {
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct StdResponse<T: Serialize + ToSchema, M: ToString> {
     pub data: Option<T>,
     pub message: Option<M>,
 }
 
-impl<T: Serialize, M: ToString + Serialize> IntoResponse for StdResponse<T, M> {
+impl<T: Serialize + ToSchema, M: ToString + Serialize> IntoResponse for StdResponse<T, M> {
     fn into_response(self) -> Response {
         Json(self).into_response()
     }
