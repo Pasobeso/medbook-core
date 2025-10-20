@@ -20,6 +20,7 @@ pub struct Server {
     pub port: u16,
     pub body_limit: usize,
     pub timeout: u64,
+    pub path_prefix: String,
 }
 
 #[derive(Debug, Clone)]
@@ -96,6 +97,7 @@ pub fn load() -> Result<DotEnvyConfig> {
         timeout: std::env::var("SERVER_TIMEOUT")
             .expect("SERVER_TIMEOUT is invalid")
             .parse()?,
+        path_prefix: std::env::var("PATH_PREFIX").expect("PATH_PREFIX is invalid"),
     };
 
     let frontend = Frontend {
